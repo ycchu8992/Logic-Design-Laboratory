@@ -353,13 +353,13 @@ module lab5(
                 else n_led = {4'b1111, 12'b0};
             end
             SET:begin
-                if( btnr && cnt < 5 ) n_led = LED >> 1;
+                if( btnr && cnt < 3 ) n_led = LED >> 1;
                 else if( btnr && cnt > 2 ) n_led = {8'b0, 1'b1, 7'b0};
                 else if(btnl) n_led = {4'b1111, 12'b0};
                 else n_led = LED;                 
             end
             GUESS:begin
-                if( btnr && cnt < 5 ) n_led = LED >> 1;
+                if( btnr && cnt < 3 ) n_led = LED >> 1;
                 else if( btnr && cnt > 2 ) n_led = ( (val_0 == sv0) && (val_1 == sv1) && (val_2 == sv2) && (val_3 == sv3) )?{16'b0}:{12'b0,4'b1111};
                 else if(btnl) n_led = {4'b1111, 12'b0};
                 else n_led = LED;
@@ -388,13 +388,13 @@ module lab5(
     always@(*)begin
         case(state)
             SET:begin
-                if(btnr && cnt < 5) n_cnt = cnt + 1;
+                if(btnr && cnt < 3) n_cnt = cnt + 1;
                 else if(btnr && cnt > 2) n_cnt = 0;
                 else if(btnl) n_cnt = 0;
                 else n_cnt = cnt;
             end
             GUESS:begin
-                if(btnr && cnt < 5) n_cnt = cnt + 1;
+                if(btnr && cnt < 3) n_cnt = cnt + 1;
                 else if(btnr && cnt > 2) n_cnt = 0;
                 else if(btnl) n_cnt = 0;
                 else n_cnt = cnt;
