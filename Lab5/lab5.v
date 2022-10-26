@@ -64,7 +64,7 @@ module lab5(
 
     reg [3:0] cnt, n_cnt;
     reg [3:0] cnt2, n_cnt2;
-    reg clk_display;
+    reg CLK;
 
 
     reg [3:0] val_0,val_1,val_2,val_3;
@@ -72,12 +72,17 @@ module lab5(
     reg [3:0] sv0, sv1, sv2, sv3;
     reg [3:0] nsv_0, nsv_1, nsv_2, nsv_3;
 
-    clock_divider #(.n(2**27)) CLK(.clk(clk), .clk_div(sec));
 
-    clock_divider #(.n(2**14)) display(.clk(clk),.clk_div(clk_show));
-    always @(*) begin
-        clk_display = clk_show;
-    end
+    /*Real clock on fpga*/
+    //clock_divider #(.n(2**27)) sec_clk(.clk(clk), .clk_div(sec));
+    //clock_divider #(.n(2**14)) display(.clk(clk), .clk_div(seg));
+    //always @(*) begin CLK = seg; end
+
+    /*clock for simulation*/
+    clock_divider #(.n(2**5)) sec_clk(.clk(clk), .clk_div(sec));
+    clock_divider #(.n(2**3)) display(.clk(clk), .clk_div(seg));
+    always @(*) begin CLK = seg; end
+
 
     DEBOUNCE DB(
         .clk(clk),
@@ -340,7 +345,7 @@ module lab5(
     end
 
     //7-segment
-    always @(posedge clk_display) begin
+    always @(posedge CLK) begin
         case(DIGIT)
             4'b1110:begin
                 value <= val_1;
