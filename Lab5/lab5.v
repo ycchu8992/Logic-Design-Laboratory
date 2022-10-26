@@ -36,12 +36,12 @@ module lab5(
     reg [3:0] sv0, sv1, sv2, sv3;
     reg [3:0] nsv_0, nsv_1, nsv_2, nsv_3;
 
-    reg[15:0] ntled,tled;
+    reg[15:0] ntled, tled;
 
 
     /*Real clock on fpga*/
     clock_divider #(.n(27)) sec_clk(.clk(clk), .clk_div(t));
-    clock_divider #(.n(22)) display(.clk(clk), .clk_div(seg));
+    clock_divider #(.n(14)) display(.clk(clk), .clk_div(seg));
     always @(*) begin sec = t;end
     always @(*) begin CLK = seg; end
 
@@ -66,6 +66,7 @@ module lab5(
         if(rst) state <= IDLE;
         else state <= n_state;
     end
+
     always@(*)begin
         case(state)
             IDLE:begin
@@ -102,6 +103,7 @@ module lab5(
         if(rst) val_3 <= 4'd12;
         else val_3 <= nvl_3;
     end
+
     always@(*)begin
         case(state)
             IDLE:begin
@@ -128,7 +130,7 @@ module lab5(
             end
             WRONG:begin
                 if(btnr) nvl_3 = 4'd0;
-                else nvl_3 = 4'd12;
+                else nvl_3 = val_3;
             end
             CORRECT:begin
                 if(cnt2 > 4) nvl_3 = 4'd12;
@@ -212,7 +214,7 @@ module lab5(
             end
             WRONG:begin
                 if(btnr) nvl_1 = 4'd0;
-                else nvl_1 = 4'd12;
+                else nvl_1 = val_1;
             end
             CORRECT:begin
                 if(cnt2 > 4) nvl_1 = 4'd12;
@@ -227,6 +229,7 @@ module lab5(
         if(rst) val_0 <= 4'd12;
         else val_0 <= nvl_0;
     end
+
     always@(*)begin
         case(state)
             IDLE:begin
@@ -243,7 +246,7 @@ module lab5(
                 else nvl_0 = val_0;
             end
             GUESS:begin
-                if( btnr && cnt > 2 ) nvl_0 = 4'b11;
+                if( btnr && cnt > 2 ) nvl_0 = 4'd11;
                 else if(LED[4])begin
                     if(btnu && val_0 < 4'd9) nvl_0 = val_0 + 1;
                     else if(btnd && val_0 > 4'd0) nvl_0 = val_0 - 1;
@@ -253,7 +256,7 @@ module lab5(
             end
             WRONG:begin
                 if(btnr) nvl_0 = 4'd0;
-                else nvl_0 = 4'd12;
+                else nvl_0 = val_0;
             end
             CORRECT:begin
                 if(cnt2 > 4) nvl_0 = 4'd12;
@@ -277,6 +280,7 @@ module lab5(
             sv3 <= nsv_3;
         end
     end
+
     always@(*)begin
         case(state)
             SET:begin
@@ -327,6 +331,7 @@ module lab5(
             end
         endcase
     end
+
     always @(*) begin
         case(value)
             4'd0:DISPLAY = 7'b100_0000;
@@ -400,12 +405,12 @@ module lab5(
         endcase
     end
 
-
     //counter for btn
     always @(posedge clk) begin
         if(rst) cnt <= 0;
         else cnt <= n_cnt; 
     end
+
     always@(*)begin
         case(state)
             SET:begin
@@ -428,6 +433,7 @@ module lab5(
     always@(posedge sec)begin
         cnt2 <= n_cnt2;
     end
+    
     always@(*)begin
         case(state)
             CORRECT:begin
