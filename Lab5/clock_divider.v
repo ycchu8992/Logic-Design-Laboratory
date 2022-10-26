@@ -1,20 +1,17 @@
-module clock_divider #(parameter n=100)(
-    input clk,
+module clock_divider #(
+    parameter n = 27
+)(
+    input wire  clk,
     output wire clk_div  
 );
 
-    reg CLK_Out;
-
-    integer counter = 0;
-    always @(posedge clk) begin
-        counter <= counter + 1;
-        if(counter >= n-1) counter <= 0;
-    end
+    reg [n-1:0] num;
+    wire [n-1:0] next_num;
 
     always @(posedge clk) begin
-        CLK_Out <= (((n-1) >> 1) >= counter)?1'b0:1'b1;
+        num <= next_num;
     end
 
-    assign clk_div = CLK_Out;
-
+    assign next_num = num + 1;
+    assign clk_div = num[n-1];
 endmodule

@@ -40,16 +40,16 @@ module lab5(
 
 
     /*Real clock on fpga*/
-    //clock_divider #(.n(2**27)) sec_clk(.clk(clk), .clk_div(t));
-    //clock_divider #(.n(2**14)) display(.clk(clk), .clk_div(seg));
-    //always @(*) begin sec = t;end
-    //always @(*) begin CLK = seg; end
-
-    /*clock for simulation*/
-    clock_divider #(.n(2**5)) sec_clk(.clk(clk), .clk_div(t));
-    clock_divider #(.n(2**3)) display(.clk(clk), .clk_div(seg));
+    clock_divider #(.n(27)) sec_clk(.clk(clk), .clk_div(t));
+    clock_divider #(.n(14)) display(.clk(clk), .clk_div(seg));
     always @(*) begin sec = t;end
     always @(*) begin CLK = seg; end
+
+    /*clock for simulation*/
+    //clock_divider #(.n(5)) sec_clk(.clk(clk), .clk_div(t));
+    //clock_divider #(.n(3)) display(.clk(clk), .clk_div(seg));
+    //always @(*) begin sec = t;end
+    //always @(*) begin CLK = seg; end
 
     debounce btnr_db(.clk(clk), .pb(BTNR), .pb_debounced(db_r));
     debounce btnu_db(.clk(clk), .pb(BTNU), .pb_debounced(db_u));
