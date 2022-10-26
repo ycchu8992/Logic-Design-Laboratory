@@ -36,6 +36,8 @@ module lab5(
     reg [3:0] sv0, sv1, sv2, sv3;
     reg [3:0] nsv_0, nsv_1, nsv_2, nsv_3;
 
+    reg[15:0] ntled,tled;
+
 
     /*Real clock on fpga*/
     //clock_divider #(.n(2**27)) sec_clk(.clk(clk), .clk_div(t));
@@ -340,7 +342,6 @@ module lab5(
         endcase
     end
 
-
     //led
     always@(posedge clk)begin
         if(rst) LED <= {4'b1111, 12'b0};
@@ -371,12 +372,27 @@ module lab5(
             end
             CORRECT:begin
                 if(cnt2 > 4) n_led = {4'b1111, 12'b0};
-                else n_led = ~LED;
+                else n_led = ~tled;
             end
             default:begin
                 n_led = LED;
             end
         endcase        
+    end
+
+    always@(posedge sec)begin
+        tled <= ntled;
+    end
+
+    always @(*) begin
+        case(state)
+            CORRECT:begin
+                ntled = ~tled;
+            end
+            default:begin
+                ntled = 16'b0;
+            end
+        endcase
     end
 
 
