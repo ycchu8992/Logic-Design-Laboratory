@@ -41,7 +41,7 @@ module lab5(
 
     /*Real clock on fpga*/
     clock_divider #(.n(27)) sec_clk(.clk(clk), .clk_div(t));
-    clock_divider #(.n(20)) display(.clk(clk), .clk_div(seg));
+    clock_divider #(.n(22)) display(.clk(clk), .clk_div(seg));
     always @(*) begin sec = t;end
     always @(*) begin CLK = seg; end
 
@@ -134,6 +134,7 @@ module lab5(
                 if(cnt2 > 4) nvl_3 = 4'd12;
                 else nvl_3 = val_3;
             end
+            default: nvl_3 = val_3;
         endcase
     end
 
@@ -175,7 +176,7 @@ module lab5(
                 if(cnt2 > 4) nvl_2 = 4'd12;
                 else nvl_2 = val_2;
             end
-            
+            default: nvl_2 = val_2;
         endcase
     end
 
@@ -184,6 +185,7 @@ module lab5(
         if(rst) val_1 <= 4'd12;
         else val_1 <= nvl_1;
     end
+
     always@(*)begin
         case(state)
             IDLE:begin
@@ -216,6 +218,7 @@ module lab5(
                 if(cnt2 > 4) nvl_1 = 4'd12;
                 else nvl_1 = val_1;
             end
+            default: nvl_1 = val_1;
         endcase
     end
     
@@ -256,6 +259,7 @@ module lab5(
                 if(cnt2 > 4) nvl_0 = 4'd12;
                 else nvl_0 = val_0;
             end 
+            default:nvl_0 = val_0;
         endcase
     end
 
@@ -347,6 +351,7 @@ module lab5(
         if(rst) LED <= {4'b1111, 12'b0};
         else LED <= n_led;
     end
+
     always @(*) begin
         case(state)
             IDLE:begin
