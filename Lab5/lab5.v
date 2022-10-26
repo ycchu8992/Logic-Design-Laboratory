@@ -71,12 +71,12 @@ module lab5(
                 else n_state = IDLE;
             end
             SET:begin
-                if( btnr && cnt > 4 ) n_state = GUESS;
+                if( btnr && cnt > 2 ) n_state = GUESS;
                 else if(btnl) n_state = IDLE;
                 else n_state = SET;                
             end
             GUESS:begin
-                if(btnr && cnt > 4 ) n_state = ( (val_0 == sv0) && (val_1 == sv1) && (val_2 == sv2) && (val_3 == sv3) )?CORRECT:WRONG;
+                if(btnr && cnt > 2 ) n_state = ( (val_0 == sv0) && (val_1 == sv1) && (val_2 == sv2) && (val_3 == sv3) )?CORRECT:WRONG;
                 else if(btnl) n_state = IDLE;
                 else n_state = GUESS;
             end
@@ -111,7 +111,7 @@ module lab5(
                     if(btnu && val_3 < 4'd9) nvl_3 = val_3 + 1;
                     else if(btnd && val_3 > 4'd0) nvl_3 = val_3 - 1;
                     else nvl_3 = val_3;
-                end else if( btnr && cnt > 4 ) nvl_3 = 0;
+                end else if( btnr && cnt > 2 ) nvl_3 = 0;
                 else nvl_3 = val_3;
             end
             GUESS:begin
@@ -119,7 +119,7 @@ module lab5(
                     if(btnu && val_3 < 4'd9) nvl_3 = val_3 + 1;
                     else if(btnd && val_3 > 4'd0) nvl_3 = val_3 - 1;
                     else nvl_3 = val_3;
-                end else if( btnr && cnt > 4 )begin
+                end else if( btnr && cnt > 2 )begin
                     nvl_3 = (val_0 == sv0) + (val_1 == sv1) + (val_2 == sv2) + (val_3 == sv3);
                 end
                 else nvl_3 = val_3;
@@ -151,7 +151,7 @@ module lab5(
                     if(btnu && val_2 < 4'd9) nvl_2 = val_2 + 1;
                     else if(btnd && val_2 > 4'd0) nvl_2 = val_2 - 1;
                     else nvl_2 = val_2;
-                end else if( btnr && cnt > 4 ) nvl_2 = 0;
+                end else if( btnr && cnt > 2 ) nvl_2 = 0;
                 else nvl_2 = val_2;
             end
             GUESS:begin
@@ -159,7 +159,7 @@ module lab5(
                     if(btnu && val_2 < 4'd9) nvl_2 = val_2 + 1;
                     else if(btnd && val_2 > 4'd0) nvl_2 = val_2 - 1;
                     else nvl_2 = val_2;
-                end else if( btnr && cnt > 4 )begin
+                end else if( btnr && cnt > 2 )begin
                     nvl_2 = 4'd10;
                 end
                 else nvl_2 = val_2;
@@ -193,7 +193,7 @@ module lab5(
                     if(btnu && val_1 < 4'd9) nvl_1 = val_1 + 1;
                     else if(btnd && val_1 > 4'd0) nvl_1 = val_1 - 1;
                     else nvl_1 = val_1;
-                end else if( btnr && cnt > 4 ) nvl_1 = 0;
+                end else if( btnr && cnt > 2 ) nvl_1 = 0;
                 else nvl_1 = val_1;
             end
             GUESS:begin
@@ -201,7 +201,7 @@ module lab5(
                     if(btnu && val_1 < 4'd9) nvl_1 = val_1 + 1;
                     else if(btnd && val_1 > 4'd0) nvl_1 = val_1 - 1;
                     else nvl_1 = val_1;
-                end else if( btnr && cnt > 4 )begin
+                end else if( btnr && cnt > 2 )begin
                     nvl_1 = (val_0 == sv1 || val_0 == sv2 || val_0 == sv3) + (val_1 == sv0 || val_1 == sv2 || val_1 == sv3) + (val_2 == sv0 || val_2 == sv1 || val_2 == sv3) + (val_3 == sv0 || val_3 == sv1 || val_3 == sv2);
                 end
                 else nvl_1 = val_1;
@@ -229,7 +229,7 @@ module lab5(
                 else nvl_0 = 4'd12;
             end
             SET:begin
-                if( btnr && cnt > 4 ) nvl_0 = 0;
+                if( btnr && cnt > 2 ) nvl_0 = 0;
                 else if(LED[8])begin
                     if(btnu && val_0 < 4'd9) nvl_0 = val_0 + 1;
                     else if(btnd && val_0 > 4'd0) nvl_0 = val_0 - 1;
@@ -238,7 +238,7 @@ module lab5(
                 else nvl_0 = val_0;
             end
             GUESS:begin
-                if( btnr && cnt > 4 ) nvl_0 = 4'b11;
+                if( btnr && cnt > 2 ) nvl_0 = 4'b11;
                 else if(LED[4])begin
                     if(btnu && val_0 < 4'd9) nvl_0 = val_0 + 1;
                     else if(btnd && val_0 > 4'd0) nvl_0 = val_0 - 1;
@@ -274,7 +274,7 @@ module lab5(
     always@(*)begin
         case(state)
             SET:begin
-                if( btnr && cnt > 4 ) begin
+                if( btnr && cnt > 2 ) begin
                     nsv_0 = val_0;
                     nsv_1 = val_1;
                     nsv_2 = val_2;
@@ -354,13 +354,13 @@ module lab5(
             end
             SET:begin
                 if( btnr && cnt < 5 ) n_led = LED >> 1;
-                else if( btnr && cnt > 4 ) n_led = {8'b0, 1'b1, 7'b0};
+                else if( btnr && cnt > 2 ) n_led = {8'b0, 1'b1, 7'b0};
                 else if(btnl) n_led = {4'b1111, 12'b0};
                 else n_led = LED;                 
             end
             GUESS:begin
                 if( btnr && cnt < 5 ) n_led = LED >> 1;
-                else if( btnr && cnt > 4 ) n_led = ( (val_0 == sv0) && (val_1 == sv1) && (val_2 == sv2) && (val_3 == sv3) )?{16'b0}:{12'b0,4'b1111};
+                else if( btnr && cnt > 2 ) n_led = ( (val_0 == sv0) && (val_1 == sv1) && (val_2 == sv2) && (val_3 == sv3) )?{16'b0}:{12'b0,4'b1111};
                 else if(btnl) n_led = {4'b1111, 12'b0};
                 else n_led = LED;
             end
@@ -389,13 +389,13 @@ module lab5(
         case(state)
             SET:begin
                 if(btnr && cnt < 5) n_cnt = cnt + 1;
-                else if(btnr && cnt > 4) n_cnt = 0;
+                else if(btnr && cnt > 2) n_cnt = 0;
                 else if(btnl) n_cnt = 0;
                 else n_cnt = cnt;
             end
             GUESS:begin
                 if(btnr && cnt < 5) n_cnt = cnt + 1;
-                else if(btnr && cnt > 4) n_cnt = 0;
+                else if(btnr && cnt > 2) n_cnt = 0;
                 else if(btnl) n_cnt = 0;
                 else n_cnt = cnt;
             end
