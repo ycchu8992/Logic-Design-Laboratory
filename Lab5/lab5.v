@@ -41,7 +41,7 @@ module lab5(
 
     /*Real clock on fpga*/
     clock_divider #(.n(27)) sec_clk(.clk(clk), .clk_div(t));
-    clock_divider #(.n(14)) display(.clk(clk), .clk_div(seg));
+    clock_divider #(.n(20)) display(.clk(clk), .clk_div(seg));
     always @(*) begin sec = t;end
     always @(*) begin CLK = seg; end
 
