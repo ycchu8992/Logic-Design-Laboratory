@@ -1,3 +1,23 @@
+module MyClockDivider #(parameter n=100)(
+    input clk,
+    output wire clk_div  
+);
+
+    reg CLK_Out;
+
+    integer counter = 0;
+    always @(posedge clk) begin
+        counter <= counter + 1;
+        if(counter >= n-1) counter <= 0;
+    end
+
+    always @(posedge clk) begin
+        CLK_Out <= (((n-1) >> 1) >= counter)?1'b0:1'b1;
+    end
+
+    assign clk_div = CLK_Out;
+
+endmodule
 module lab4_1 ( 
     input wire clk,
     input wire rst,
@@ -20,17 +40,17 @@ module lab4_1 (
     reg clk_display;
     wire clk_show;
 
-    clock_divider #(.n(10**7)) clk_CNT(
+    MyClockDivider #(.n(10**7)) clk_CNT(
         .clk(clk),
         .clk_div(clkCNT)
     );
 
-    clock_divider #(.n(2**3)) clkTemp(
+    MyClockDivider #(.n(2**3)) clkTemp(
         .clk(clk),
         .clk_div(clk_db)
     );
 
-    clock_divider #(.n(2**14)) display(
+    MyClockDivider #(.n(2**14)) display(
         .clk(clk),
         .clk_div(clk_show)
     );
