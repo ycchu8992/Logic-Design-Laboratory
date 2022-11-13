@@ -525,6 +525,7 @@ always @ (posedge clk, posedge rst) begin
 		end else nums <= 4'b0;
 	end
 end	
+//key_down[KEY_CODES[nums]]
 always @ (*) begin
 	case (last_change)
 		KEY_CODES[00] : key_num = 4'b0000;
