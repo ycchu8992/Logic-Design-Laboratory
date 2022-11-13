@@ -34,8 +34,21 @@ reg [4:0] counter, ncounter, Point, nPoint;
 reg [3:0] val3, val2, val1, val0;
 reg [3:0] nvl3, nvl2, nvl1, nvl0;
 reg [15:0] next_led;
+reg [15:0] LFSR [8:0];
 parameter [8:0] LEFT_SHIFT_CODES  = 9'b0_0001_0010;
 parameter [8:0] RIGHT_SHIFT_CODES = 9'b0_0101_1001;
+
+parameter [15:0] seeds [8:0] = {
+    16'b0001_0100_0101_1000,
+    16'b1010_1010_0001_0110,
+    16'b0011_1001_1010_1101,
+    16'b0101_0010_0010_1010,
+    16'b0101_0001_0101_0101,
+    16'b0101_0101_0101_0100,
+    16'b1010_0101_0101_0010,
+    16'b1000_1011_1010_1010,
+    16'b1001_0100_0101_0010
+};
 
 parameter [8:0] KEY_CODES [0:19] = {
 	9'b0_0100_0101,	// 0 => 45
@@ -61,16 +74,13 @@ parameter [8:0] KEY_CODES [0:19] = {
 	9'b0_0111_1101  // right_9 => 7D
 };
 
-reg [15:0] nums;
+reg [3:0] nums;
 reg [3:0] key_num;
 reg [9:0] last_key;
 	
-wire shift_down;
 wire [511:0] key_down;
 wire [8:0] last_change;
 wire been_ready;
-	
-assign shift_down = (key_down[LEFT_SHIFT_CODES] == 1'b1 || key_down[RIGHT_SHIFT_CODES] == 1'b1) ? 1'b1 : 1'b0;
 
 debounce btnu_db(.clk(clk), .pb(start), .pb_debounced(db_u));
 OnePulse btnu_op(.signal_single_pulse(btnu), .signal(db_u), .clock(clk));
@@ -89,8 +99,33 @@ always @(posedge clk) begin
     else LED <= next_led;
 end
 
+integer i;
+always @(posedge sec) begin
+    if(rst) begin
+        for (i=0; i < 9; i=i+1) begin
+            LFSR[i] <= seeds[i];
+        end
+    end
+    else begin
+        for (i=0; i < 9; i=i+1) begin
+            LFSR[i] <= {LFSR[i][5]^(LFSR[i][3]^(LFSR[i][2]^LFSR[i][0])), LFSR[i][15:1]};
+        end
+    end
+end
+
+integer j;
 always @(*) begin
-    next_led = ~16'b0;
+    case (state)
+        GAME:begin
+            for (j=0; j < 16; j=j+1) begin
+                if(j<7) next_led[j] = 0;
+                else next_led[j] = LFSR[15-j][15];
+            end
+        end
+        default:begin
+            next_led = 16'b0;
+        end
+    endcase   
 end
 
 /*----------------------------------
@@ -136,14 +171,11 @@ always @(*) begin
         end
         GAME:begin
             nPoint = 0;
-            // TODO;
-            /*
-            if(LED[16-key_num])begin
+            if(LED[16-nums])begin
                 nPoint = Point+1;
             end else begin
                 nPoint = Point;
-            end
-            */
+            end 
         end
         FINAL:begin
            if(btnu) nPoint = 5'd0;
@@ -484,18 +516,13 @@ KeyboardDecoder key_de (
 );
 always @ (posedge clk, posedge rst) begin
 	if (rst) begin
-		nums <= 16'b0;
+		nums <= 4'b0;
 	end else begin
-		nums <= nums;
 		if (been_ready && key_down[last_change] == 1'b1) begin
 			if (key_num != 4'b1111)begin
-				if (shift_down == 1'b1) begin
-					nums <= {key_num, nums[15:4]};
-				end else begin
-					nums <= {nums[11:0], key_num};
-				end
-			end
-		end
+				nums <= key_num;
+            end else nums <= 4'b0;
+		end else nums <= 4'b0;
 	end
 end	
 always @ (*) begin
