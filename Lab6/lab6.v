@@ -147,7 +147,7 @@ always @(*) begin
         end
         FINAL:begin
             if(btnu) ncounter = 5'd30;
-            else ncounter = counter - 1;
+            else ncounter = 5'd30;
         end 
         default:begin
             if(btnu) ncounter = 5'd30;
