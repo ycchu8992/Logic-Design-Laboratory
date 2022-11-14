@@ -35,8 +35,6 @@ reg [3:0] val3, val2, val1, val0;
 reg [3:0] nvl3, nvl2, nvl1, nvl0;
 reg [15:0] next_led;
 reg [15:0] LFSR [8:0];
-parameter [8:0] LEFT_SHIFT_CODES  = 9'b0_0001_0010;
-parameter [8:0] RIGHT_SHIFT_CODES = 9'b0_0101_1001;
 
 parameter [15:0] seeds [8:0] = {
     16'b0001_0100_0101_1000,
@@ -525,7 +523,7 @@ always @ (posedge clk, posedge rst) begin
 		end else nums <= 4'b0;
 	end
 end	
-//key_down[KEY_CODES[nums]]
+
 always @ (*) begin
 	case (last_change)
 		KEY_CODES[00] : key_num = 4'b0000;
