@@ -95,7 +95,7 @@ always @(*) begin Dclk = seg; end
 
 always @(posedge clk) begin
     if(rst) LED <= 16'b0;
-    else LED <= {next_led[15:7],hit[0],hit[1],hit[2],hit[3],hit[4],hit[5],hit[6]};
+    else LED <= next_led;
 end
 
 integer i;
