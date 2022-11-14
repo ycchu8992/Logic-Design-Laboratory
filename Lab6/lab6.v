@@ -31,21 +31,22 @@ parameter GAME = 2'b01;
 parameter INITIAL = 2'b00;
 reg sec, Dclk;
 reg [4:0] counter, ncounter, Point, nPoint;
+reg [26:0] sCnt, nsCnt;
 reg [3:0] val3, val2, val1, val0;
 reg [3:0] nvl3, nvl2, nvl1, nvl0;
 reg [15:0] next_led;
 reg [15:0] LFSR [8:0];
 
 parameter [15:0] seeds [8:0] = {
-    16'b0001_0100_0101_1000,
-    16'b1010_1010_0001_0110,
-    16'b0011_1001_1010_1101,
-    16'b0101_0010_0010_1010,
-    16'b0101_0001_0101_0101,
-    16'b0101_0101_0101_0100,
-    16'b1010_0101_0101_0010,
-    16'b1000_1011_1010_1010,
-    16'b1001_0100_0101_0010
+    16'b0001_0000_0000_0000,
+    16'b0000_0000_0000_0100,
+    16'b0000_0000_0000_0001,
+    16'b0000_0000_0010_0000,
+    16'b0000_0001_0000_0000,
+    16'b0000_0000_1000_0000,
+    16'b0010_0000_0000_0010,
+    16'b0000_1000_0000_0000,
+    16'b1000_0100_0000_0000
 };
 
 parameter [8:0] KEY_CODES [0:19] = {
@@ -94,7 +95,7 @@ always @(*) begin Dclk = seg; end
 
 always @(posedge clk) begin
     if(rst) LED <= 16'b0;
-    else LED <= next_led;
+    else LED <= {next_led[15:7],hit[0],hit[1],hit[2],hit[3],hit[4],hit[5],hit[6]};
 end
 
 integer i;
@@ -111,18 +112,75 @@ always @(posedge sec) begin
     end
 end
 
+
+reg [8:0] hit, nhit;
+
+always @(posedge clk) begin
+    if(rst) hit <= 9'b0;
+    else hit <= nhit;
+end
+
+always @(*) begin
+    case (state)
+        GAME:begin
+            if( sCnt < 27'd100000000) begin
+                nhit = hit;
+                if(nums)begin
+                    if( LED[16-nums] && !hit[nums-1] ) nhit[nums-1] = 1;
+                    else nhit = hit;
+                end else nhit = hit;
+            end
+            else begin
+                nhit = 9'b0;
+            end
+        end
+        default:begin
+            nhit = 9'b0;
+        end
+    endcase
+end
+
+always @(posedge clk) begin
+    if(rst) sCnt <= 27'd0;
+    else sCnt <= nsCnt;
+end
+always @(*) begin
+    case (state)
+        GAME:begin
+            if( sCnt < 27'd100000000 ) nsCnt = sCnt + 27'd1;
+            else nsCnt = 27'd0;
+        end
+        default: nsCnt = 27'd0;
+    endcase
+end
+
 integer j;
 always @(*) begin
     case (state)
         GAME:begin
-            for (j=0; j < 16; j=j+1) begin
-                if(j<7) next_led[j] = 0;
-                else next_led[j] = LFSR[15-j][15];
+            for (j=0;j<7;j=j+1) begin next_led[j] = 0; end
+            if(nums)begin
+                if( LED[16-nums] && !hit[nums-1])begin
+                    for (j=7;j<16;j=j+1) begin
+                        if(j==(16-nums)) next_led[j] = 0;
+                        else if(hit[15-j]) next_led[j] = 0;
+                        else next_led[j] = LFSR[15-j][15];
+                    end
+                end
+                else begin
+                    for (j=7;j<16;j=j+1) begin
+                        if(hit[15-j]) next_led[j] = 0;
+                        else next_led[j] = LFSR[15-j][15];
+                    end
+                end
+            end else begin
+                for (j=7;j<16;j=j+1) begin
+                    if(hit[15-j]) next_led[j] = 0;
+                    else next_led[j] = LFSR[15-j][15];
+                end
             end
         end
-        default:begin
-            next_led = 16'b0;
-        end
+        default: next_led = 16'b0;
     endcase   
 end
 
@@ -169,11 +227,10 @@ always @(*) begin
         end
         GAME:begin
             nPoint = 0;
-            if(LED[16-nums])begin
-                nPoint = Point+1;
-            end else begin
-                nPoint = Point;
-            end 
+            if(nums)begin
+                if(LED[16-nums] && !hit[nums-1]) nPoint = Point+1;
+                else nPoint = Point;
+            end else nPoint = Point;
         end
         FINAL:begin
            if(btnu) nPoint = 5'd0;
@@ -522,7 +579,7 @@ always @ (posedge clk, posedge rst) begin
             end else nums <= 4'b0;
 		end else nums <= 4'b0;
 	end
-end	
+end
 
 always @ (*) begin
 	case (last_change)
